@@ -15,7 +15,7 @@ public class PlayerModel : ScriptableObject
     [SerializeField] private TextAsset playerDataTextAsset;
     [SerializeField] private string playerDataGetURl = "https://ga1vqcu3o1.execute-api.us-east-1.amazonaws.com/Assessment/stack";
     
-    private Grade[] _grades;
+    private Grade[] _grades = new Grade[3];
 
     public Grade[] Grades => _grades;
 
@@ -38,10 +38,13 @@ public class PlayerModel : ScriptableObject
                     var blockArr = JsonConvert.DeserializeObject<Block[]>(request.downloadHandler.text);
                     var blocksGroupedByGrade = blockArr.GroupBy(block => block.Grade);
                     var jaggedBlockArr = blocksGroupedByGrade.Select(group => group.ToArray()).ToArray();
-                    _grades = new Grade[jaggedBlockArr.Length];
-                    for (int i = 0; i < jaggedBlockArr.Length; i++)
+                    for (int i = 0; i < _grades.Length; i++)
                     {
-                        _grades[i] = new Grade(jaggedBlockArr[i]);
+                        var blocks = jaggedBlockArr[i].OrderBy(block => block.Domain)
+                            .ThenBy(block => block.Cluster)
+                            .ThenBy(block => block.Standardid)
+                            .ToArray();
+                        _grades[i] = new Grade(blocks);
                     }
                     onPlayerDataGot?.Invoke(this);
                     break;

@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3833649574368635768, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
+      propertyPath: blockType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5180503097653512815, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
       propertyPath: m_text
       value: 'Mastered
@@ -20,7 +24,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5325174585886429794, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
       propertyPath: m_Name
-      value: Stone Block Variant
+      value: Stone Block
       objectReference: {fileID: 0}
     - target: {fileID: 5818471662502927648, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -30,6 +34,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Mastered
       objectReference: {fileID: 0}
+    - target: {fileID: 8201395534854643456, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62ea3578d260c0b4a986ca90fd5024e4, type: 2}
     - target: {fileID: 8844637503709822327, guid: d7bd4ea9277040943ab2724a336a0764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

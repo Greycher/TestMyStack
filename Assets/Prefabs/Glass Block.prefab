@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1515008622040577945, guid: 47db2ace05c6387449dad65839b3d7f6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 11aaf40c10c9e9742a07a22fa1e8f834, type: 2}
     - target: {fileID: 2191326036332189166, guid: 47db2ace05c6387449dad65839b3d7f6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -50,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3256528641939438331, guid: 47db2ace05c6387449dad65839b3d7f6, type: 3}
       propertyPath: m_Name
-      value: Glass Block Variant
+      value: Glass Block
       objectReference: {fileID: 0}
     - target: {fileID: 3776282305823536569, guid: 47db2ace05c6387449dad65839b3d7f6, type: 3}
       propertyPath: m_Materials.Array.data[0]

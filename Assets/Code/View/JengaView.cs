@@ -7,12 +7,12 @@ namespace Code.View
 {
     public class JengaView : MonoBehaviour
     {
-        [SerializeField] private BlockFacade glassBlockPrefab;
-        [SerializeField] private BlockFacade woodenBlockPrefab;
-        [SerializeField] private BlockFacade stoneBlockPrefab;
+        [SerializeField] private BlockView glassBlockPrefab;
+        [SerializeField] private BlockView woodenBlockPrefab;
+        [SerializeField] private BlockView stoneBlockPrefab;
         [SerializeField] private float spacing = .3f;
 
-        private Rigidbody[] _blockBodies;
+        private BlockView[] _blockViews;
         private Vector3 _blockSize;
 
         private void Awake()
@@ -24,49 +24,90 @@ namespace Code.View
         public void BuildJenga(Grade grade)
         {
             var blocks = grade.Blocks;
-            _blockBodies = new Rigidbody[blocks.Length];
+            _blockViews = new BlockView[blocks.Length];
             for (int i = 0; i < blocks.Length; i++)
             {
                 var block = blocks[i];
-                Rigidbody prefab;
+                BlockView prefab;
                 switch (block.BlockType)
                 {
                     case BlockType.Glass:
-                        prefab = glassBlockPrefab.Rigidbody;
+                        prefab = glassBlockPrefab;
                         break;
                     
                     case BlockType.Wood:
-                        prefab = woodenBlockPrefab.Rigidbody;
+                        prefab = woodenBlockPrefab;
                         break;
                     
                     case BlockType.Stone:
-                        prefab = stoneBlockPrefab.Rigidbody;
+                        prefab = stoneBlockPrefab;
                         break;
 
                     default:
                         throw new Exception();
                 }
+                
+                var pose = GetPoseAt(i);
+                _blockViews[i] = Instantiate(prefab, pose.position, pose.rotation, transform);
+            }
 
-                var x = (i % 3 - 1) * _blockSize.x + (i % 3 - 1) * spacing;
-                var y = (i / 3) * _blockSize.y;
-                float z;
-                Quaternion rotation;
-                if (i / 3 % 2 == 0)
+        }
+
+        public void TestTheStack()
+        {
+            foreach (var blockView in _blockViews)
+            {
+                if (blockView.BlockType == BlockType.Glass)
                 {
-                    z = x;
-                    x = 0;
-                    rotation = Quaternion.LookRotation(Vector3.right);
+                    blockView.gameObject.SetActive(false);
                 }
                 else
                 {
-                    rotation = Quaternion.identity;
-                    z = 0;
+                    blockView.Rigidbody.isKinematic = false;
                 }
-                var localPos = new Vector3(x, y, z);
-                var pos = transform.TransformPoint(localPos);
-                _blockBodies[i] = Instantiate(prefab, pos, rotation, transform);
             }
+        }
 
+        public void ResetStack()
+        {
+            for (int i = 0; i < _blockViews.Length; i++)
+            {
+                var blockView = _blockViews[i];
+                blockView.Rigidbody.isKinematic = true;
+                var localPose = GetLocalPoseAt(i);
+                blockView.transform.localPosition = localPose.position;
+                blockView.transform.localRotation = localPose.rotation;
+                blockView.gameObject.SetActive(true);
+            }
+        }
+        
+        private Pose GetLocalPoseAt(int i)
+        {
+            var x = (i % 3 - 1) * _blockSize.x + (i % 3 - 1) * spacing;
+            var y = (i / 3) * _blockSize.y;
+            float z;
+            Quaternion localRot;
+            if (i / 3 % 2 == 0)
+            {
+                z = x;
+                x = 0;
+                localRot = Quaternion.LookRotation(Vector3.right);
+            }
+            else
+            {
+                localRot = Quaternion.identity;
+                z = 0;
+            }
+            var localPos = new Vector3(x, y, z);
+            return new Pose(localPos, localRot);
+        }
+
+        private Pose GetPoseAt(int i)
+        {
+            var localPose = GetLocalPoseAt(i);
+            var pos = transform.TransformPoint(localPose.position);
+            var rot = transform.rotation * localPose.rotation;
+            return new Pose(pos, rot);
         }
     }
 }
