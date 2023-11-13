@@ -1,3 +1,3 @@
-This is the implemenation of the assesment Test My Stack. 
+This is the implementation of the assessment Test My Stack. 
 
-Windows build can be rached throught the release section. Just download TestMyStack.zip unzip it and run the executible file, have fun with that!
+Windows build can be reached through the release section. Just download TestMyStack.zip, unzip it, and run the executable file. Have fun with that!
