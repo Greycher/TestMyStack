@@ -1,73 +1,81 @@
-using System;
 using System.Collections;
 using Code.View;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Networking;
 
 namespace Code.Presenter
 {
     public class GamePresenter : MonoBehaviour
     {
-        [SerializeField] private PlayerModel playerModel;
-        [SerializeField] private float distanceBetweenJengas = 5f;
-        [SerializeField] private JengaView jengaViewPrefab;
-        [SerializeField] private Button testMyStackBtn;
-        [SerializeField] private float jengaTestingDuration = 5f;
-
-        private JengaView[] _jengaViews;
-        [SerializeField] private int _selectedJengaIndex; 
+        [SerializeField] private StudentModel studentModel;
+        [SerializeField] private StackPresenter stackPresenter;
+        [SerializeField] private LoadingView loadingView;
+        [SerializeField] private ErrorPopup errorPopup;
+        [SerializeField] private float minLoadingDuration = 1f;
+        
+        private float _loadingStartTime;
 
         private void Awake()
         {
-            StartCoroutine(playerModel.GetPlayerDataCoroutine(OnPlayerDataFetched));
+            _loadingStartTime = Time.realtimeSinceStartup;
+            GetStudentData();
         }
 
-        private void OnEnable()
+        private void GetStudentData()
         {
-            testMyStackBtn.onClick.AddListener(TestSelectedJenga);
+            StartCoroutine(studentModel.GetStudentDataCoroutine(OnGetStudentDataSuccess, OnGetStudentDataFail));
         }
 
-        private void OnDisable()
+        private void OnGetStudentDataSuccess(StudentModel studentModel)
         {
-            testMyStackBtn.onClick.RemoveListener(TestSelectedJenga);
-        }
-
-        private void OnPlayerDataFetched(PlayerModel playerModel)
-        {
-            foreach (var grade in playerModel.Grades)
+            var elapsedTime = Time.realtimeSinceStartup - _loadingStartTime;
+            if (elapsedTime < minLoadingDuration)
             {
-                Debug.Log($"{grade.DisplayName} has {grade.Blocks.Length} blocks.");
+                StartCoroutine(StartTheGameWithDelayCoroutine(studentModel, minLoadingDuration - elapsedTime));
             }
-
-            BuildJengas(playerModel);
-        }
-
-        private void BuildJengas(PlayerModel playerModel)
-        {
-            var grades = playerModel.Grades;
-            var count = grades.Length;
-            var x = -((count - 1) / 2 + (1 - count % 2) * 0.5f) * distanceBetweenJengas;
-            _jengaViews = new JengaView[grades.Length];
-            for (int i = 0; i < grades.Length; i++)
+            else
             {
-                _jengaViews[i] = Instantiate(jengaViewPrefab, x * Vector3.right, Quaternion.identity);
-                _jengaViews[i].BuildJenga(grades[i]);
-                x += distanceBetweenJengas;
+                StartTheGame(studentModel);
             }
         }
-        
-        private void TestSelectedJenga()
+
+        private IEnumerator StartTheGameWithDelayCoroutine(StudentModel studentModel, float elapsedTime)
         {
-            StartCoroutine(TestJengaCoroutine(_selectedJengaIndex));
+            yield return new WaitForSeconds(elapsedTime);
+            StartTheGame(studentModel);
         }
 
-        private IEnumerator TestJengaCoroutine(int jengaIndex)
+        private void StartTheGame(StudentModel studentModel)
         {
-            testMyStackBtn.interactable = false;
-            _jengaViews[jengaIndex].TestTheStack();
-            yield return new WaitForSeconds(jengaTestingDuration);
-            _jengaViews[jengaIndex].ResetStack();
-            testMyStackBtn.interactable = true;
+            loadingView.gameObject.SetActive(false);
+            stackPresenter.OnGetStudenDataSuccess(studentModel);
+        }
+
+        private void OnGetStudentDataFail(UnityWebRequest.Result result)
+        {
+            loadingView.StopLoadingAnimation();
+            errorPopup.OnRetryRequested.AddListener(OnRetryRequested);
+
+            string errorMessage;
+            switch (result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                    errorMessage = "There was a connection error while getting student data. " +
+                                   "Make sure to have reliable and secure connection.";
+                    break;
+                    
+                default: 
+                    errorMessage = "There was a unkown error while getting student data.";
+                    break;
+            }
+            
+            errorPopup.Show(errorMessage);
+        }
+
+        private void OnRetryRequested()
+        {
+            errorPopup.OnRetryRequested.RemoveListener(OnRetryRequested);
+            GetStudentData();
         }
     }
 }

@@ -1,6 +1,5 @@
 using Code.Model;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Code.View
 {

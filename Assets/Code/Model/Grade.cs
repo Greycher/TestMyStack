@@ -2,14 +2,14 @@ namespace Code.Model
 {
     public class Grade
     {
-        private Block[] _blocks;
+        private Topic[] _topics;
         
-        public Grade(Block[] blocks)
+        public Grade(Topic[] topics)
         {
-            _blocks = blocks;
+            _topics = topics;
         }
 
-        public Block[] Blocks => _blocks;
-        public string DisplayName => _blocks[0].Grade;
+        public Topic[] Topics => _topics;
+        public string DisplayName => _topics[0].Grade;
     }
 }

@@ -1,18 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Code.Model;
+using TMPro;
 using UnityEngine;
 
 namespace Code.View
 {
-    public class JengaView : MonoBehaviour
+    public class StackView : MonoBehaviour
     {
         [SerializeField] private BlockView glassBlockPrefab;
         [SerializeField] private BlockView woodenBlockPrefab;
         [SerializeField] private BlockView stoneBlockPrefab;
+        [SerializeField] private TextMeshPro gradeNameLabel;
         [SerializeField] private float spacing = .3f;
 
-        private BlockView[] _blockViews;
+        private List<BlockView> _blockViews;
         private Vector3 _blockSize;
 
         private void Awake()
@@ -21,15 +24,15 @@ namespace Code.View
             _blockSize = glassBlockPrefab.MeshRenderer.bounds.size;
         }
 
-        public void BuildJenga(Grade grade)
+        public void BuildStack(Grade grade)
         {
-            var blocks = grade.Blocks;
-            _blockViews = new BlockView[blocks.Length];
+            var blocks = grade.Topics;
+            _blockViews = new List<BlockView>(blocks.Length);
             for (int i = 0; i < blocks.Length; i++)
             {
-                var block = blocks[i];
+                var topic = blocks[i];
                 BlockView prefab;
-                switch (block.BlockType)
+                switch (topic.BlockType)
                 {
                     case BlockType.Glass:
                         prefab = glassBlockPrefab;
@@ -48,9 +51,10 @@ namespace Code.View
                 }
                 
                 var pose = GetPoseAt(i);
-                _blockViews[i] = Instantiate(prefab, pose.position, pose.rotation, transform);
+                _blockViews.Add(Instantiate(prefab, pose.position, pose.rotation, transform));
             }
 
+            gradeNameLabel.text = grade.DisplayName;
         }
 
         public void TestTheStack()
@@ -70,7 +74,7 @@ namespace Code.View
 
         public void ResetStack()
         {
-            for (int i = 0; i < _blockViews.Length; i++)
+            for (int i = 0; i < _blockViews.Count; i++)
             {
                 var blockView = _blockViews[i];
                 blockView.Rigidbody.isKinematic = true;
@@ -108,6 +112,11 @@ namespace Code.View
             var pos = transform.TransformPoint(localPose.position);
             var rot = transform.rotation * localPose.rotation;
             return new Pose(pos, rot);
+        }
+
+        public int FindBlockIndex(BlockView blockView)
+        {
+            return _blockViews.FindIndex(view => view.GetInstanceID() == blockView.GetInstanceID());
         }
     }
 }

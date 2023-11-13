@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Code.Model
 {
-    public class Block
+    public class Topic
     {
         private int _id;
         private string _subject;
@@ -24,7 +24,7 @@ namespace Code.Model
         public string Standardid => _standardid;
         public string Standarddescription => _standarddescription;
 
-        public Block(int id, string subject, string grade, int mastery, string domainid, string domain, string cluster, string standardid, string standarddescription)
+        public Topic(int id, string subject, string grade, int mastery, string domainid, string domain, string cluster, string standardid, string standarddescription)
         {
             this._id = id;
             this._subject = subject;
